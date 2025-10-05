@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>聲樂課報名系統</title>
+    <style>
+        body {
+            font-family: Arial, "Microsoft JhengHei", sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        input[type="text"],
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+
+        input[type="text"]:focus,
+        select:focus {
+            border-color: #4CAF50;
+            outline: none;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            display: block;
+            margin: 20px auto;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .result {
+            margin-top: 20px;
+        }
+        
+        .result-item {
+            background-color: #e8f5e8;
+            border: 2px solid #4CAF50;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            white-space: pre-line;
+            line-height: 1.6;
+            position: relative;
+        }
+        
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: #2196F3;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+            margin: 0;
+            display: inline-block;
+        }
+        
+        .copy-btn:hover {
+            background-color: #1976D2;
+        }
+        
+        .copy-btn:active {
+            background-color: #0D47A1;
+        }
+
+        .example {
+            color: #666;
+            font-size: 14px;
+            font-style: italic;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>聲樂課報名系統</h1>
+
+        <form id="registrationForm">
+            <div class="form-group">
+                <label for="courseDate">上課日期：</label>
+                <input type="date" id="courseDate" name="courseDate" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="studentName">學生姓名：</label>
+                <input type="text" id="studentName" name="studentName" required placeholder="例如：祐寧">
+            </div>
+            
+            <div class="form-group">
+                <label for="courseTime">上課時間：</label>
+                <input type="text" id="courseTime" name="courseTime" required placeholder="例如：19:00-20:00">
+                <div class="example">格式範例：19:00-20:00</div>
+            </div>
+
+            <div class="form-group">
+                <label for="classroom">教室編號：</label>
+                <select id="classroom" name="classroom" required>
+                    <option value="">請選擇教室</option>
+                    <option value="128">128</option>
+                    <option value="807">807</option>
+                </select>
+            </div>
+
+            <button type="submit">輸出報名結果</button>
+            <button type="button" id="clearResults" style="background-color: #f44336; margin-top: 10px;">清除所有結果</button>
+        </form>
+
+        <div id="result" class="result"></div>
+    </div>
+
+    <script>
+        document.getElementById('registrationForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            // 取得表單資料
+            const courseDate = document.getElementById('courseDate').value;
+            const studentName = document.getElementById('studentName').value.trim();
+            const courseTime = document.getElementById('courseTime').value.trim();
+            const classroom = document.getElementById('classroom').value;
+
+            // 檢查必填欄位
+            if (!courseDate || !studentName || !courseTime || !classroom) {
+                alert('請填寫完整資訊！');
+                return;
+            }
+
+            // 轉換日期格式並加上星期
+            const weekdays = ['日', '一', '二', '三', '四', '五', '六'];
+            const dateObj = new Date(courseDate);
+            const weekday = weekdays[dateObj.getDay()];
+            
+            // 格式化日期顯示 (M/D格式)
+            const month = dateObj.getMonth() + 1;
+            const day = dateObj.getDate();
+            const formattedDate = `${month}/${day}(${weekday})`;
+
+            
+            
+            const result = `恭喜您已成功報名聲樂課！
+時間：${formattedDate} ${courseTime}
+報名人：${studentName}
+地點：${classroom}
+上課前請務必先詳閱此附件，並請記得攜帶領據（領據於課後請老師簽名，並將指導費用信封袋裝好交給老師）、譜、指導費、筆、水！
+第一個上課的記得借教室和冷氣！`;
+            
+            // 創建新的結果項目
+            const resultContainer = document.getElementById('result');
+            const resultItem = document.createElement('div');
+            resultItem.className = 'result-item';
+            
+            // 創建複製按鈕
+            const copyBtn = document.createElement('button');
+            copyBtn.className = 'copy-btn';
+            copyBtn.textContent = '複製';
+            copyBtn.onclick = function() {
+                navigator.clipboard.writeText(result).then(function() {
+                    copyBtn.textContent = '已複製';
+                    setTimeout(function() {
+                        copyBtn.textContent = '複製';
+                    }, 1500);
+                }).catch(function(err) {
+                    console.error('複製失敗: ', err);
+                    alert('複製失敗，請手動選取文字複製');
+                });
+            };
+            
+            // 設定結果內容
+            resultItem.textContent = result;
+            resultItem.appendChild(copyBtn);
+            
+            // 將新項目插入到容器最前面（最新的在上面）
+            resultContainer.insertBefore(resultItem, resultContainer.firstChild);
+            resultContainer.style.display = 'block';
+            
+            // 滾動到結果區域
+            resultDiv.scrollIntoView({ behavior: 'smooth' });
+            
+            // 清空表單（保留日期，方便連續輸入同一天的課程）
+            document.getElementById('studentName').value = '';
+            document.getElementById('courseTime').value = '';
+            document.getElementById('classroom').value = '';
+        });
+        
+        // 清除結果按鈕事件
+        document.getElementById('clearResults').addEventListener('click', function() {
+            const resultContainer = document.getElementById('result');
+            resultContainer.innerHTML = '';
+            resultContainer.style.display = 'none';
+        });
+    </script>
+</body>
+
+</html>
